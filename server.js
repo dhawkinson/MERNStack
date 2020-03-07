@@ -1,24 +1,25 @@
-// server.js
+// server.js -- server side
 // setup express server, connect to the dB, initial middleware, define routes, listen on Port
 
 const express   = require('express');
-// const connectDB = require('./config/db');
+const connectDB = require('./config/db');
 
 const app       = express();
 
-// //  Connect Database
-// connectDB();
+//  Connect Database
+connectDB();
 
-// //  Init Middleware
-// app.use(express.json({ extended : false}));
+//  Init Middleware
+//  NOTE: Body Parser now included in Express 
+app.use(express.json({ extended : false}));
 
 app.get('/', (req, res) => res.send('API Running'));
 
-// //  Define routes
-// app.use('/api/users', require('./routes/api/users'));
-// app.use('/api/auth', require('./routes/api/auth'));
-// app.use('/api/posts', require('./routes/api/posts'));
-// app.use('/api/profile', require('./routes/api/profile'));
+//  Define routes
+app.use('/api/users', require('./routes/api/users'));
+app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/profile', require('./routes/api/profile'));
+app.use('/api/posts', require('./routes/api/posts'));
 
 const PORT = process.env.PORT || 5000;
 
