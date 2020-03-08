@@ -32,7 +32,7 @@ router.get('/me', auth, async (req, res) => {
     res.json(profile);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error')
+    res.status(500).send('Server Error');
   }
 });
 
@@ -44,8 +44,12 @@ router.post(
   [
     auth,
     [
-      check('status', 'Status is required').not().isEmpty(),
-      check('skills', 'Skills is required').not().isEmpty()
+      check('status', 'Status is required')
+        .not()
+        .isEmpty(),
+      check('skills', 'Skills is required')
+        .not()
+        .isEmpty()
     ]
   ],
   async (req, res) => {
@@ -70,7 +74,7 @@ router.post(
     } = req.body;
 
     // Build profile object
-    const profileFields = {};  //  to prevent undefined
+    const profileFields = {}; //  to prevent undefined
     profileFields.user = req.user.id;
     if (company) profileFields.company = company;
     if (website) profileFields.website = website;
@@ -81,11 +85,9 @@ router.post(
     if (skills) {
       profileFields.skills = skills.split(',').map(skill => skill.trim());
     }
-    // console.log(profileFields.skills);
-    // res.send('Hello');
 
     // Build social object
-    profileFields.social = {};  //  to prevent undefined
+    profileFields.social = {}; //  to prevent undefined
     if (youtube) profileFields.social.youtube = youtube;
     if (twitter) profileFields.social.twitter = twitter;
     if (facebook) profileFields.social.facebook = facebook;
@@ -100,8 +102,8 @@ router.post(
       if (profile) {
         // Update
         profile = await Profile.findOneAndUpdate(
-          { user: req.user.id }, 
-          { $set: profileFields }, 
+          { user: req.user.id },
+          { $set: profileFields },
           { new: true }
         );
 
@@ -129,7 +131,7 @@ router.get('/', async (req, res) => {
     res.json(profiles);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error')
+    res.status(500).send('Server Error');
   }
 });
 
@@ -138,17 +140,123 @@ router.get('/', async (req, res) => {
 //  @access Public
 router.get('/user/:user_id', async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.params.user_id }).populate('user', ['name', 'avatar']);
+    const profile = await Profile.findOne({
+      user: req.params.user_id
+    }).populate('user', ['name', 'avatar']);
 
     if (!profile) return res.status(400).json({ msg: 'Profile not found' });
 
     res.json(profile);
   } catch (err) {
     console.error(err.message);
-    if(err.kind == 'ObjectId') {
+    if (err.kind == 'ObjectId') {
       return res.status(400).json({ msg: 'Profile not found' });
     }
-    res.status(500).send('Server Error')
+    res.status(500).send('Server Error');
+  }
+});
+
+//  @route  DELETE api/profile
+//  @desc   Delete profile, user & posts
+//  @access Private
+router.delete('/', auth, async (req, res) => {
+  try {
+    // Remove Profile
+    await Profile.findOneAndRemove({ user: req.user.id });
+
+    // Remove User
+    await User.findOneAndRemove({ _id: req.user.id });
+
+    // Remove Posts
+    // placeholder await Post.findOneAndRemove({ user: req.user.id });
+
+    res.json({ msg: 'User deleted' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+//  @route  PUT api/profile/experience 
+//  *** (PUT rather than POST - updating a subset of Profile rather than a new entity) but could be either ***
+//  @desc   Add profile experience
+//  @access Private
+router.put(
+  '/experience', 
+  [
+    auth,
+    [
+      check('title', 'Title is required')
+      .not()
+      .isEmpty(),
+      check('company', 'Company is required')
+      .not()
+      .isEmpty(),
+      check('from', 'From date is required')
+      .not()
+      .isEmpty()
+    ]
+  ], 
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      title,
+      company,
+      location,
+      from,
+      to,
+      current,
+      description
+    } = req.body;
+
+    const newExp = {
+      title,
+      company,
+      location,
+      from,
+      to,
+      current,
+      description
+    }
+  try {
+    // find the profile
+    const profile = await Profile.findOne({ user: req.user.id });
+    // pop the experience object on the from of the experience array (unshift)
+    profile.experience.unshift(newExp);
+    // save the profile
+    await profile.save();
+    // return the profile (for the front-end)
+    res.json(profile);
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+//  @route  DELETE api/profile/experience 
+//  *** (DELETE rather than PUT - deleting a subset of Profile rather than simple update) but could be either ***
+//  @desc   Delete profile experience
+//  @access Private
+router.delete('/experience/:exp_id', auth, async (req, res) => {
+  try {
+    // Remove Profile
+    const profile = await Profile.findOne({ user: req.user.id });
+
+    // Get remove index
+    const removeIndex = profile.experience.map(item => item.id).indexOf(req.params.exp_id);
+    profile.experience.splice(removeIndex,1);
+    // save the profile
+    await profile.save();
+    // return the profile (for the front-end) NOTE: the specific experience has been removed
+    res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
   }
 });
 
