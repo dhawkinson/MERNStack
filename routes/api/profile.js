@@ -29,7 +29,7 @@ router.get('/me', auth, async (req, res) => {
         msg: 'There is no profile for this user'
       });
     }
-    //  else return profile
+    //  else return profile to front end
     res.json(profile);
   } catch (err) {
     console.error(err.message);
@@ -107,7 +107,7 @@ router.post(
           { $set: profileFields },
           { new: true }
         );
-
+        // send profile to front end
         return res.json(profile);
       }
 
@@ -115,6 +115,7 @@ router.post(
       profile = new Profile(profileFields);
 
       await profile.save();
+      // send profile to front end
       res.json(profile);
     } catch (err) {
       console.error(err.message);
@@ -129,6 +130,7 @@ router.post(
 router.get('/', async (req, res) => {
   try {
     const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+    // send profiles to front end
     res.json(profiles);
   } catch (err) {
     console.error(err.message);
@@ -146,7 +148,7 @@ router.get('/user/:user_id', async (req, res) => {
     }).populate('user', ['name', 'avatar']);
 
     if (!profile) return res.status(400).json({ msg: 'Profile not found' });
-
+    // send profile to front end
     res.json(profile);
   } catch (err) {
     console.error(err.message);
@@ -449,7 +451,7 @@ router.get('/github/:username', async (req, res) => {
       if(response.statusCode !== 200) {
         return res.status(404).json({ msg: 'No Github profile found' });
       }
-      // send back a JSON Object
+      // send back a JSON Object to front end
       res.json(JSON.parse(body));
     });
   } catch (err) {
