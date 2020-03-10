@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server",
-    "server": "nodemon server",
-    "client": "npm start --prefix client",
+    "server": "nodemon server || true",
+    "client": "npm start --prefix client || true",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Doug Hawkinson",
