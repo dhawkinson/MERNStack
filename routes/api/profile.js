@@ -13,6 +13,7 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Post = require('../../models/Post');
 
 // @route   GET api/profile/me
 // @desc    get current user profile
@@ -59,6 +60,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
+    // deconstruct req.body
     const {
       company,
       website,
@@ -83,7 +85,7 @@ router.post(
     if (bio) profileFields.bio = bio;
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
-    if (skills) {
+    if (typeof req.body.skills !== 'undefined') {
       profileFields.skills = skills.split(',').map(skill => skill.trim());
     }
 
@@ -164,6 +166,8 @@ router.get('/user/:user_id', async (req, res) => {
 //  @access Private
 router.delete('/', auth, async (req, res) => {
   try {
+    // Remove user posts
+    await Post.deleteMany({ user: req.user.id })
     // Remove Profile
     await Profile.findOneAndRemove({ user: req.user.id });
 

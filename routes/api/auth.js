@@ -17,7 +17,7 @@ const User = require('../../models/User');
 router.get('/', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password'); // leave off password
-    // send user to fron end
+    // send user to front end
     res.json(user);
   } catch (err) {
     console.error(err.message);

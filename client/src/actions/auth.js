@@ -11,13 +11,14 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS, 
   LOGIN_FAIL,
-  LOGOUT
+  LOGOUT,
+  CLEAR_PROFILE
 } from './types'
 import setAuthToken from '../utils/setAuthToken'
 
 // Load User -- validate that we have an authorized user
 export const loadUser = () => async dispatch => {
-  // check for token in localStorage and bring it back if there
+  // check for token in localStorage and bring it back if it is there
   if ( localStorage.token ) {
     setAuthToken(localStorage.token)
   }
@@ -33,6 +34,8 @@ export const loadUser = () => async dispatch => {
     })
   } catch (err) {
     // FAIL - set the action AUTH_ERROR, no payload to pass
+    // NOTE: this also fires on the very first pass of starting the app
+    //       this is because there is no user yet so USER_LOAD will fail
     dispatch({
       type: AUTH_ERROR
     })
@@ -61,7 +64,7 @@ export const register = ({ name, email, password }) => async dispatch => {
 
     dispatch(loadUser())
   } catch (err) {
-    // alert is errors
+    // alert if errors
     const errors = err.response.data.errors
 
     if ( errors ) {
@@ -111,5 +114,6 @@ export const login = (email, password) => async dispatch => {
 
 // Logout / Clear Profile
 export const logout = () => dispatch => {
+  dispatch({ type: CLEAR_PROFILE })
   dispatch({ type: LOGOUT })
 }
