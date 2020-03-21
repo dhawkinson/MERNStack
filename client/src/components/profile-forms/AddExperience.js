@@ -2,6 +2,7 @@
 // Functionality for adding Experience to a profile.
 
 import React, { Fragment, useState } from 'react'
+import { withRouter } from 'react-router-dom' // NOTE: withRouter allows us to use history in the action
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
@@ -93,4 +94,4 @@ AddExperience.propTypes = {
   addExpeience: PropTypes.func.isRequired
 }
 
-export default connect(null, { addExperience })(AddExperience)
+export default connect(null, { addExperience })(withRouter(AddExperience))

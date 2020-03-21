@@ -53,7 +53,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
     //        the second param(s) is/are the conditionals that fire useEffect()
     //        if = [] there are no conditionals and useEffect() runs once on componentDidMount()
     //        if no second param, useEffect runs endlessly
-  }, [loading])
+  }, [loading, getCurrentProfile])
 
   const {
     company,

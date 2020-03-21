@@ -5,7 +5,9 @@ import axios from 'axios'
 
 import { setAlert } from './alert'
 import { 
-  GET_PROFILE,
+  GET_PROFILE, 
+  GET_PROFILES, 
+  GET_REPOS,
   UPDATE_PROFILE,
   CLEAR_PROFILE,
   ACCOUNT_DELETED,
@@ -30,6 +32,66 @@ export const getCurrentProfile = () => async dispatch => {
     })
   }
 }
+
+// Get profiles
+export const getProfiles = () => async dispatch => {
+  // prevent flashing of current profile
+  dispatch({ type: CLEAR_PROFILE })
+
+  try {
+    const res = await axios.get('/api/profile')
+
+    dispatch({
+      type: GET_PROFILES,
+      payload: res.data
+    })
+  } catch (err) {
+    console.log(err)
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    })
+  }
+}
+
+// Get profile by user ID
+export const getProfileById = userId => async dispatch => {
+
+  try {
+    const res = await axios.get(`/api/profile/user/${userId}`)
+
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data
+    })
+  } catch (err) {
+    console.log(err)
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    })
+  }
+}
+
+// Get github repos
+export const getGithubRepos = githubusername => async dispatch => {
+
+  try {
+    const res = await axios.get(`/api/profile/github/${githubusername}`)
+
+    dispatch({
+      type: GET_REPOS,
+      payload: res.data
+    })
+  } catch (err) {
+    console.log(err)
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    })
+  }
+}
+
 
 //  Create or Update a Profile
 export const createProfile = (formData, history, edit = false) => async dispatch => {
@@ -202,7 +264,7 @@ export const deleteAccount = () => async dispatch => {
   if ( window.confirm( 'Are you sure? This cannot be undone.' ) ) {
     try {
       // this is the server-side route
-      const res = await axios.delete('/api/profile')
+      await axios.delete('/api/profile')
   
       // send the type and payload
       dispatch({ type: CLEAR_PROFILE  })
