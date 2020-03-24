@@ -39,7 +39,7 @@ const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentP
       website: loading || !profile.website ? '' : profile.website,
       location: loading || !profile.location ? '' : profile.location,
       status: loading || !profile.status ? '' : profile.status,
-      skills: loading || !profile.skills ? '' : profile.skills,
+      skills: loading || !profile.skills ? '' : profile.skills.join(','), //  NOTE: convert to string, later reconversion to array
       bio: loading || !profile.bio ? '' : profile.bio,
       githubusername: loading || !profile.githubusername ? '' : profile.githubusername,
       youtube: loading || !profile.social ? '' :profile.social.youtube,
