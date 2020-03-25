@@ -11,7 +11,7 @@ import { getGithubRepos } from '../../actions/profile';
 const ProfileGithub = ({ username, getGithubRepos, repos }) => {
   useEffect(() => {
     getGithubRepos(username)
-  }, [getGithubRepos])
+  }, [getGithubRepos, username])
 
   return (
     <div className="profile-github">
@@ -21,7 +21,7 @@ const ProfileGithub = ({ username, getGithubRepos, repos }) => {
           <div key={ repo._id } className='repo bg-white p-1 my-1'>
             <div>
               <h4>
-                <a href={ repo.html_url } target='_blank' rel='noopener norefferer'>
+                <a href={ repo.html_url } target='_blank' rel='noopener noreferrer'>
                   { repo.name }
                 </a>
               </h4>
