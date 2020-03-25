@@ -1,14 +1,17 @@
 {
   "name": "mernstack",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.16.x",
+    "npm": "6.13.x"
+  },
   "description": "Social Network for Developers",
   "main": "server.js",
   "scripts": {
     "start": "node server",
     "server": "nodemon server || true",
     "client": "npm start --prefix client || true",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Doug Hawkinson",
   "license": "MIT",
